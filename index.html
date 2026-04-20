@@ -3,431 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>선물 포지션 계산기</title>
+<title>동선이의 러키비키 계산기 :) 뀨뀨</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0a0a0f;
-  --surface: #111118;
-  --surface2: #18181f;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.13);
-  --text: #f0f0f5;
-  --muted: #7070a0;
-  --hint: #404060;
-  --green: #00e5a0;
-  --green-dim: rgba(0,229,160,0.12);
-  --red: #ff4466;
-  --red-dim: rgba(255,68,102,0.12);
-  --amber: #ffb340;
-  --amber-dim: rgba(255,179,64,0.1);
-  --accent: #7c6fff;
-  --accent-dim: rgba(124,111,255,0.15);
-  --mono: 'DM Mono', monospace;
-  --sans: 'Syne', sans-serif;
+  --bg: #0a0a0f; --surface: #111118; --surface2: #18181f;
+  --border: rgba(255,255,255,0.07); --border2: rgba(255,255,255,0.13);
+  --text: #f0f0f5; --muted: #7070a0; --hint: #404060;
+  --green: #00e5a0; --green-dim: rgba(0,229,160,0.12);
+  --red: #ff4466; --red-dim: rgba(255,68,102,0.12);
+  --amber: #ffb340; --amber-dim: rgba(255,179,64,0.1);
+  --accent: #7c6fff; --accent-dim: rgba(124,111,255,0.15);
+  --mono: 'DM Mono', monospace; --sans: 'Syne', sans-serif;
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--sans);
-  min-height: 100vh;
-  line-height: 1.5;
-}
-
-/* grid bg */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.container {
-  position: relative; z-index: 1;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 40px 24px 80px;
-}
-
-header {
-  margin-bottom: 40px;
-}
-
-header .eyebrow {
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--accent);
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-header h1 {
-  font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
-
+body { background: var(--bg); color: var(--text); font-family: var(--sans); min-height: 100vh; line-height: 1.5; }
+body::before { content: ''; position: fixed; inset: 0; background-image: linear-gradient(rgba(124,111,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(124,111,255,0.03) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 0; }
+.container { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 40px 24px 80px; }
+header { margin-bottom: 40px; }
+header .eyebrow { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
 header h1 span { color: var(--accent); }
-
-.tabs {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 32px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 4px;
-  width: fit-content;
-}
-
-.tab {
-  padding: 8px 22px;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  border: none;
-  border-radius: 7px;
-  cursor: pointer;
-  background: transparent;
-  color: var(--muted);
-  transition: all 0.2s;
-  letter-spacing: 0.01em;
-}
-
-.tab.active {
-  background: var(--accent-dim);
-  color: var(--accent);
-  border: 1px solid rgba(124,111,255,0.3);
-}
-
+.tabs { display: flex; gap: 4px; margin-bottom: 32px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 4px; width: fit-content; }
+.tab { padding: 8px 22px; font-family: var(--sans); font-size: 13px; font-weight: 600; border: none; border-radius: 7px; cursor: pointer; background: transparent; color: var(--muted); transition: all 0.2s; letter-spacing: 0.01em; }
+.tab.active { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(124,111,255,0.3); }
 .tab:hover:not(.active) { color: var(--text); }
-
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 @media(max-width:680px) { .grid2 { grid-template-columns: 1fr; } }
-
 .panel { display: none; }
 .panel.active { display: block; }
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 24px;
-}
-
-.card-title {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
-  color: var(--muted);
-  text-transform: uppercase;
-  margin-bottom: 20px;
-}
-
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+.card-title { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--muted); text-transform: uppercase; margin-bottom: 20px; }
 .field { margin-bottom: 14px; }
-
-label {
-  display: block;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 0.08em;
-  margin-bottom: 6px;
-}
-
-input[type=number], select {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 14px;
-  padding: 9px 12px;
-  outline: none;
-  transition: border 0.2s;
-}
-
+label { display: block; font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.08em; margin-bottom: 6px; }
+input[type=number], select { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: var(--mono); font-size: 14px; padding: 9px 12px; outline: none; transition: border 0.2s; }
 input[type=number]:focus, select:focus { border-color: var(--accent); }
 select { cursor: pointer; }
 select option { background: var(--surface2); }
-
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
+.mode-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.mode-btn { padding: 8px; border: 1px solid var(--border2); border-radius: 8px; background: transparent; font-family: var(--mono); font-size: 11px; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.2s; letter-spacing: 0.05em; }
+.mode-btn.active { background: var(--accent-dim); border-color: rgba(124,111,255,0.4); color: var(--accent); }
 .dir-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-
-.dir-btn {
-  padding: 9px;
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  background: transparent;
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  color: var(--muted);
-  transition: all 0.2s;
-}
-
-.dir-btn.long.active {
-  background: var(--green-dim);
-  border-color: rgba(0,229,160,0.4);
-  color: var(--green);
-}
-
-.dir-btn.short.active {
-  background: var(--red-dim);
-  border-color: rgba(255,68,102,0.4);
-  color: var(--red);
-}
-
-.calc-btn {
-  width: 100%;
-  padding: 12px;
-  margin-top: 6px;
-  border: none;
-  border-radius: 9px;
-  background: var(--accent);
-  color: #fff;
-  font-family: var(--sans);
-  font-size: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  letter-spacing: 0.02em;
-  transition: opacity 0.2s, transform 0.1s;
-}
-
+.dir-btn { padding: 9px; border: 1px solid var(--border2); border-radius: 8px; background: transparent; font-family: var(--sans); font-size: 13px; font-weight: 600; cursor: pointer; color: var(--muted); transition: all 0.2s; }
+.dir-btn.long.active { background: var(--green-dim); border-color: rgba(0,229,160,0.4); color: var(--green); }
+.dir-btn.short.active { background: var(--red-dim); border-color: rgba(255,68,102,0.4); color: var(--red); }
+.calc-btn { width: 100%; padding: 12px; margin-top: 6px; border: none; border-radius: 9px; background: var(--accent); color: #fff; font-family: var(--sans); font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 0.02em; transition: opacity 0.2s, transform 0.1s; }
 .calc-btn:hover { opacity: 0.88; }
 .calc-btn:active { transform: scale(0.98); }
-
-/* coin picker */
 .coin-wrap { position: relative; }
-
-.coin-display {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 14px;
-  padding: 9px 12px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  user-select: none;
-  transition: border 0.2s;
-}
-
+.coin-display { width: 100%; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text); font-family: var(--mono); font-size: 14px; padding: 9px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: border 0.2s; }
 .coin-display:hover { border-color: var(--accent); }
 .coin-display .arrow { color: var(--muted); font-size: 10px; }
-
-.dropdown {
-  position: absolute;
-  top: calc(100% + 4px); left: 0; right: 0;
-  background: var(--surface);
-  border: 1px solid var(--border2);
-  border-radius: 10px;
-  z-index: 999;
-  max-height: 260px;
-  overflow: hidden;
-  display: none;
-  flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-}
-
+.dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; z-index: 999; max-height: 260px; overflow: hidden; display: none; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
 .dropdown.open { display: flex; }
-
-.dd-search {
-  padding: 8px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.dd-search input {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 12px;
-  padding: 6px 10px;
-  outline: none;
-}
-
+.dd-search { padding: 8px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.dd-search input { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-family: var(--mono); font-size: 12px; padding: 6px 10px; outline: none; }
 .dd-search input:focus { border-color: var(--accent); }
-
 .dd-list { overflow-y: auto; flex: 1; }
-
-.dd-item {
-  padding: 8px 14px;
-  font-family: var(--mono);
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: var(--text);
-  transition: background 0.1s;
-}
-
+.dd-item { padding: 8px 14px; font-family: var(--mono); font-size: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; color: var(--text); transition: background 0.1s; }
 .dd-item:hover, .dd-item.sel { background: var(--surface2); }
 .dd-item.sel { color: var(--accent); }
 .dd-item .pr { color: var(--muted); font-size: 11px; }
-
-.hint-text {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 4px;
-}
-
-.ticker-badge {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--accent);
-  background: var(--accent-dim);
-  padding: 2px 7px;
-  border-radius: 4px;
-  margin-left: 6px;
-}
-
-/* results */
-.result-empty {
-  padding: 48px 0;
-  text-align: center;
-  font-family: var(--mono);
-  font-size: 12px;
-  color: var(--hint);
-}
-
+.hint-text { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 4px; }
+.ticker-badge { font-family: var(--mono); font-size: 10px; color: var(--accent); background: var(--accent-dim); padding: 2px 7px; border-radius: 4px; margin-left: 6px; }
+.fee-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; padding: 10px 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; }
+.fee-row label { margin: 0; flex: 1; cursor: pointer; }
+.fee-row input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer; }
+.fee-row select { width: auto; padding: 4px 8px; font-size: 11px; }
+.result-empty { padding: 48px 0; text-align: center; font-family: var(--mono); font-size: 12px; color: var(--hint); }
 .result-empty .icon { font-size: 28px; margin-bottom: 10px; }
-
-.big-pnl {
-  text-align: center;
-  padding: 20px 0 16px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 16px;
-}
-
-.big-pnl .badge {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 10px;
-  padding: 3px 10px;
-  border-radius: 4px;
-  margin-bottom: 10px;
-  letter-spacing: 0.1em;
-}
-
+.big-pnl { text-align: center; padding: 20px 0 16px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+.big-pnl .badge { display: inline-block; font-family: var(--mono); font-size: 10px; padding: 3px 10px; border-radius: 4px; margin-bottom: 10px; letter-spacing: 0.1em; }
 .badge.long { background: var(--green-dim); color: var(--green); border: 1px solid rgba(0,229,160,0.2); }
 .badge.short { background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,68,102,0.2); }
-
-.big-pnl .amount {
-  font-family: var(--mono);
-  font-size: 32px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-}
-
-.big-pnl .sublabel {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 4px;
-  letter-spacing: 0.08em;
-}
-
+.big-pnl .amount { font-family: var(--mono); font-size: 32px; font-weight: 500; letter-spacing: -0.02em; }
+.big-pnl .sublabel { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; }
 .r-rows { display: flex; flex-direction: column; gap: 0; }
-
-.r-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 9px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-}
-
+.r-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
 .r-row:last-child { border-bottom: none; }
 .r-label { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 .r-val { font-family: var(--mono); font-size: 13px; font-weight: 500; }
-
 .profit { color: var(--green); }
 .loss { color: var(--red); }
-
-.warn-box {
-  margin-top: 14px;
-  background: var(--amber-dim);
-  border: 1px solid rgba(255,179,64,0.2);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--amber);
-  display: none;
-  line-height: 1.6;
-}
-
-/* compound */
+.warn-box { margin-top: 14px; background: var(--amber-dim); border: 1px solid rgba(255,179,64,0.2); border-radius: 8px; padding: 10px 14px; font-family: var(--mono); font-size: 11px; color: var(--amber); display: none; line-height: 1.6; }
 .comp-card { max-width: 680px; }
 .cstat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px; }
 @media(max-width:480px) { .cstat-grid { grid-template-columns: 1fr; } }
-
-.cstat {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px;
-  text-align: center;
-}
-
-.cstat .n {
-  font-family: var(--mono);
-  font-size: 18px;
-  font-weight: 500;
-  margin-top: 4px;
-}
-
-.cstat .l {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 0.08em;
-}
-
+.cstat { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; text-align: center; }
+.cstat .n { font-family: var(--mono); font-size: 18px; font-weight: 500; margin-top: 4px; }
+.cstat .l { font-family: var(--mono); font-size: 10px; color: var(--muted); letter-spacing: 0.08em; }
 .bar-wrap { margin-top: 8px; }
-
-.bar-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 5px;
-  font-family: var(--mono);
-  font-size: 11px;
-}
-
-.bar-bg {
-  flex: 1;
-  height: 4px;
-  background: var(--surface2);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-family: var(--mono); font-size: 11px; }
+.bar-bg { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
 .bar-fill { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.5s cubic-bezier(.4,0,.2,1); }
-
 .bar-label-l { width: 36px; text-align: right; color: var(--muted); }
 .bar-label-r { width: 84px; text-align: right; color: var(--text); }
 </style>
@@ -438,18 +107,14 @@ select option { background: var(--surface2); }
     <div class="eyebrow">Binance USDⓈ-M Futures</div>
     <h1>선물 포지션 <span>계산기</span></h1>
   </header>
-
   <div class="tabs">
     <button class="tab active" onclick="switchTab('pos',0)">포지션 계산기</button>
     <button class="tab" onclick="switchTab('comp',1)">복리 시뮬레이터</button>
   </div>
-
-  <!-- 포지션 계산기 -->
   <div id="pos-panel" class="panel active">
     <div class="grid2">
       <div class="card">
         <div class="card-title">투자 조건 입력</div>
-
         <div class="field">
           <label>암호화폐 <span class="ticker-badge" id="tc">로딩중...</span></label>
           <div class="coin-wrap" id="cw">
@@ -459,13 +124,12 @@ select option { background: var(--surface2); }
             </div>
             <div class="dropdown" id="dd">
               <div class="dd-search">
-                <input id="dsearch" type="text" placeholder="심볼 검색 (예: BIO, ETH, SOL...)" oninput="filterDD(this.value)" onclick="event.stopPropagation()">
+                <input id="dsearch" type="text" placeholder="심볼 검색" oninput="filterDD(this.value)" onclick="event.stopPropagation()">
               </div>
               <div class="dd-list" id="dlist"></div>
             </div>
           </div>
         </div>
-
         <div class="field">
           <label>포지션 방향</label>
           <div class="dir-btns">
@@ -473,26 +137,49 @@ select option { background: var(--surface2); }
             <button class="dir-btn short" id="btn-short" onclick="setDir('short')">▼ 숏 (매도)</button>
           </div>
         </div>
-
-        <div class="row2">
-          <div class="field"><label>투자 금액 (USD)</label><input type="number" id="amount" value="1000" min="1"></div>
-          <div class="field"><label>레버리지 (x)</label><input type="number" id="lev" value="10" min="1" max="125"></div>
+        <div class="field">
+          <label>입력 방식</label>
+          <div class="mode-btns">
+            <button class="mode-btn active" id="btn-mode-margin" onclick="setMode('margin')">증거금 + 레버리지</button>
+            <button class="mode-btn" id="btn-mode-qty" onclick="setMode('qty')">수량 직접 입력</button>
+          </div>
+        </div>
+        <div id="mode-margin-fields">
+          <div class="row2">
+            <div class="field"><label>증거금 (USDT)</label><input type="number" id="amount" value="1000" min="1"></div>
+            <div class="field"><label>레버리지 (x)</label><input type="number" id="lev" value="10" min="1" max="125"></div>
+          </div>
+        </div>
+        <div id="mode-qty-fields" style="display:none">
+          <div class="row2">
+            <div class="field"><label>수량 (Contract)</label><input type="number" id="qty" value="1" step="0.001"></div>
+            <div class="field"><label>레버리지 (x)</label><input type="number" id="lev2" value="10" min="1" max="125"></div>
+          </div>
         </div>
         <div class="row2">
           <div class="field">
-            <label>진입 가격 (USD)</label>
+            <label>진입 가격 (USDT)</label>
             <input type="number" id="entry" placeholder="자동 입력">
             <div class="hint-text" id="phint"></div>
           </div>
-          <div class="field"><label>타겟 가격 (USD)</label><input type="number" id="target" placeholder="목표가"></div>
+          <div class="field"><label>타겟 가격 (USDT)</label><input type="number" id="target" placeholder="목표가"></div>
         </div>
         <div class="field">
           <label>손절 가격 (선택)</label>
           <input type="number" id="stop" placeholder="">
         </div>
+        <div class="fee-row">
+          <input type="checkbox" id="usefee" checked>
+          <label for="usefee" style="font-size:11px">수수료 포함</label>
+          <select id="feetype">
+            <option value="0.05">메이커 0.02% × 2</option>
+            <option value="0.1" selected>테이커 0.05% × 2</option>
+            <option value="0.09">진입테이커+청산메이커</option>
+            <option value="0">수수료 0%</option>
+          </select>
+        </div>
         <button class="calc-btn" onclick="calc()">계산하기</button>
       </div>
-
       <div class="card">
         <div class="card-title">계산 결과</div>
         <div id="rempty" class="result-empty">
@@ -503,33 +190,33 @@ select option { background: var(--surface2); }
           <div class="big-pnl">
             <div id="rbadge"></div>
             <div class="amount" id="rpnl"></div>
-            <div class="sublabel">타겟 도달 시 예상 손익</div>
+            <div class="sublabel">타겟 도달 시 순손익 (수수료 반영)</div>
           </div>
           <div class="r-rows">
-            <div class="r-row"><span class="r-label">포지션 크기</span><span class="r-val" id="rsize"></span></div>
-            <div class="r-row"><span class="r-label">진입 증거금</span><span class="r-val" id="rmargin"></span></div>
+            <div class="r-row"><span class="r-label">포지션 수량</span><span class="r-val" id="rqty"></span></div>
+            <div class="r-row"><span class="r-label">포지션 가치 (명목)</span><span class="r-val" id="rsize"></span></div>
+            <div class="r-row"><span class="r-label">초기 증거금</span><span class="r-val" id="rmargin"></span></div>
+            <div class="r-row"><span class="r-label">총 수수료</span><span class="r-val loss" id="rfee"></span></div>
             <div class="r-row"><span class="r-label">수익률 (ROE)</span><span class="r-val" id="rroe"></span></div>
             <div class="r-row"><span class="r-label">가격 변동폭</span><span class="r-val" id="rmove"></span></div>
-            <div class="r-row"><span class="r-label">청산 가격 (예상)</span><span class="r-val loss" id="rliq"></span></div>
-            <div class="r-row" id="rslrow" style="display:none"><span class="r-label">손절 손실</span><span class="r-val loss" id="rsl"></span></div>
+            <div class="r-row"><span class="r-label">청산가 (Isolated, 예상)</span><span class="r-val loss" id="rliq"></span></div>
+            <div class="r-row" id="rslrow" style="display:none"><span class="r-label">손절 순손실</span><span class="r-val loss" id="rsl"></span></div>
           </div>
           <div class="warn-box" id="lwarn"></div>
         </div>
       </div>
     </div>
   </div>
-
-  <!-- 복리 시뮬레이터 -->
   <div id="comp-panel" class="panel">
     <div class="card comp-card">
       <div class="card-title">복리 시뮬레이터</div>
       <div class="row2">
-        <div class="field"><label>초기 투자금 (USD)</label><input type="number" id="cseed" value="1000"></div>
+        <div class="field"><label>초기 투자금 (USDT)</label><input type="number" id="cseed" value="1000"></div>
         <div class="field"><label>목표 수익률 / 거래 (%)</label><input type="number" id="crate" value="5" step="0.5"></div>
       </div>
       <div class="row2">
         <div class="field"><label>거래 횟수</label><input type="number" id="ctrades" value="20" min="1" max="200"></div>
-        <div class="field"><label>수수료 / 거래 (%)</label><input type="number" id="cfee" value="0.05" step="0.01"></div>
+        <div class="field"><label>수수료 / 거래 (%)</label><input type="number" id="cfee" value="0.1" step="0.01"></div>
       </div>
       <button class="calc-btn" onclick="calcComp()" style="max-width:200px">시뮬레이션</button>
     </div>
@@ -542,37 +229,32 @@ select option { background: var(--surface2); }
     </div>
   </div>
 </div>
-
 <script>
-var dir='long', symbols=[], prices={}, sel='BTCUSDT';
-
+var dir='long', mode='margin', symbols=[], prices={}, sel='BTCUSDT';
+// Binance MMR tier (단순화: 낮은 계층만, 대부분 포지션 커버)
+var MMR_DEFAULT = 0.004; // 0.4% (BTC tier1)
+var MMR_TABLE = { BTCUSDT:0.004, ETHUSDT:0.005, BNBUSDT:0.0065, SOLUSDT:0.0065 };
 document.addEventListener('click',function(e){
   if(!document.getElementById('cw').contains(e.target))
     document.getElementById('dd').classList.remove('open');
 });
-
 function symDisp(s){ return s.replace(/_?USDT$/,'/USDT'); }
-
 async function load(){
   try{
     var r=await fetch('https://fapi.binance.com/fapi/v1/exchangeInfo');
     var d=await r.json();
-    symbols=d.symbols
-      .filter(function(s){ return s.contractType==='PERPETUAL'&&s.status==='TRADING'&&s.marginAsset==='USDT'; })
-      .map(function(s){ return s.symbol; })
-      .sort();
+    symbols=d.symbols.filter(function(s){ return s.contractType==='PERPETUAL'&&s.status==='TRADING'&&s.marginAsset==='USDT'; }).map(function(s){ return s.symbol; }).sort();
     document.getElementById('tc').textContent=symbols.length+'개';
     await loadPrices();
     renderDD(symbols);
     setSel('BTCUSDT');
   }catch(e){
-    symbols=['BTCUSDT','ETHUSDT','SOLUSDT','BIO_USDT','BNBUSDT'];
+    symbols=['BTCUSDT','ETHUSDT','SOLUSDT','BNBUSDT'];
     document.getElementById('tc').textContent='오프라인';
     renderDD(symbols);
     setSel('BTCUSDT');
   }
 }
-
 async function loadPrices(){
   try{
     var r=await fetch('https://fapi.binance.com/fapi/v1/ticker/price');
@@ -580,26 +262,19 @@ async function loadPrices(){
     d.forEach(function(t){ prices[t.symbol]=parseFloat(t.price); });
   }catch(e){}
 }
-
 function fp(p){
-  if(!p||isNaN(p)) return '';
+  if(!p||isNaN(p)) return '-';
   if(p>=1000) return p.toLocaleString('en-US',{maximumFractionDigits:2});
   if(p>=1) return p.toFixed(4);
   return p.toFixed(6);
 }
-
 function fmt(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
-
 function renderDD(list){
   document.getElementById('dlist').innerHTML=list.map(function(s){
     var p=prices[s];
-    return '<div class="dd-item'+(s===sel?' sel':'')+'" onclick="setSel(\''+s.replace(/'/g,"\\'")+'\')">'
-      +'<span>'+symDisp(s)+'</span>'
-      +(p?'<span class="pr">$'+fp(p)+'</span>':'')
-      +'</div>';
+    return '<div class="dd-item'+(s===sel?' sel':'')+'" onclick="setSel(\''+s.replace(/'/g,"\\'")+'\')"><span>'+symDisp(s)+'</span>'+(p?'<span class="pr">$'+fp(p)+'</span>':'')+'</div>';
   }).join('');
 }
-
 function setSel(s){
   sel=s;
   document.getElementById('cd-text').textContent=symDisp(s);
@@ -614,59 +289,90 @@ function setSel(s){
     document.getElementById('phint').textContent='';
   }
 }
-
 function toggleDD(){
   var dd=document.getElementById('dd');
   dd.classList.toggle('open');
   if(dd.classList.contains('open')){ document.getElementById('dsearch').focus(); renderDD(symbols); }
 }
-
 function filterDD(v){
   v=v.toUpperCase().replace(/[/_]/g,'');
   var f=v?symbols.filter(function(s){ return s.replace('_','').includes(v); }):symbols;
   renderDD(f);
 }
-
 function switchTab(t,i){
   document.querySelectorAll('.tab').forEach(function(b,j){ b.classList.toggle('active',j===i); });
   document.getElementById('pos-panel').classList.toggle('active',t==='pos');
   document.getElementById('comp-panel').classList.toggle('active',t==='comp');
 }
-
 function setDir(d){
   dir=d;
   document.getElementById('btn-long').classList.toggle('active',d==='long');
   document.getElementById('btn-short').classList.toggle('active',d==='short');
 }
-
+function setMode(m){
+  mode=m;
+  document.getElementById('btn-mode-margin').classList.toggle('active',m==='margin');
+  document.getElementById('btn-mode-qty').classList.toggle('active',m==='qty');
+  document.getElementById('mode-margin-fields').style.display=m==='margin'?'':'none';
+  document.getElementById('mode-qty-fields').style.display=m==='qty'?'':'none';
+}
 function calc(){
-  var amount=parseFloat(document.getElementById('amount').value)||0;
-  var lev=parseFloat(document.getElementById('lev').value)||1;
   var entry=parseFloat(document.getElementById('entry').value)||0;
   var target=parseFloat(document.getElementById('target').value)||0;
   var stop=parseFloat(document.getElementById('stop').value)||0;
-  if(!amount||!entry||!target) return;
-  var size=amount*lev, qty=size/entry;
+  if(!entry||!target) return;
+  var qty, margin, lev;
+  if(mode==='margin'){
+    var amount=parseFloat(document.getElementById('amount').value)||0;
+    lev=parseFloat(document.getElementById('lev').value)||1;
+    if(!amount) return;
+    margin=amount;
+    qty=(amount*lev)/entry;
+  } else {
+    qty=parseFloat(document.getElementById('qty').value)||0;
+    lev=parseFloat(document.getElementById('lev2').value)||1;
+    if(!qty) return;
+    margin=(qty*entry)/lev;
+  }
+  var size=qty*entry;
   var diff=dir==='long'?(target-entry):(entry-target);
-  var pnl=qty*diff, roe=(pnl/amount)*100;
+  var grossPnl=qty*diff;
+  // 수수료: 진입 명목 + 청산 명목 에 fee% 적용
+  var feeRate=document.getElementById('usefee').checked?(parseFloat(document.getElementById('feetype').value)/100):0;
+  var fee=(entry*qty + target*qty)*feeRate/2; // feetype 값은 이미 2회분 합산(%) → /2 후 × (진입+청산)
+  // 정확한 방식으로 재계산
+  var feeEach=feeRate/2; // 단방향 fee 비율
+  var feeOpen=size*feeEach;
+  var feeClose=(target*qty)*feeEach;
+  var feeTotal=feeOpen+feeClose;
+  var pnl=grossPnl-feeTotal;
+  var roe=(pnl/margin)*100;
   var moveP=((target-entry)/entry)*100;
-  var liqP=dir==='long'?entry*(1-1/lev):entry*(1+1/lev);
+  // Binance Isolated 청산가 (단순화):
+  // Long:  liq = entry * (1 - 1/lev + MMR)
+  // Short: liq = entry * (1 + 1/lev - MMR)
+  var mmr=MMR_TABLE[sel]||MMR_DEFAULT;
+  var liqP=dir==='long'?entry*(1-1/lev+mmr):entry*(1+1/lev-mmr);
   document.getElementById('rempty').style.display='none';
   document.getElementById('rcontent').style.display='block';
   var pos=pnl>=0;
   document.getElementById('rbadge').innerHTML='<span class="badge '+dir+'">'+(dir==='long'?'LONG':'SHORT')+'</span>';
   document.getElementById('rpnl').className='amount '+(pos?'profit':'loss');
-  document.getElementById('rpnl').textContent=(pos?'+ ':'')+' $'+fmt(pnl);
+  document.getElementById('rpnl').textContent=(pos?'+':'-')+'$'+fmt(Math.abs(pnl));
+  document.getElementById('rqty').textContent=qty.toFixed(6)+' ('+sel.replace(/_?USDT$/,'')+')';
   document.getElementById('rsize').textContent='$'+fmt(size);
-  document.getElementById('rmargin').textContent='$'+fmt(amount);
+  document.getElementById('rmargin').textContent='$'+fmt(margin);
+  document.getElementById('rfee').textContent='-$'+fmt(feeTotal);
   document.getElementById('rroe').className='r-val '+(roe>=0?'profit':'loss');
   document.getElementById('rroe').textContent=(roe>=0?'+':'')+roe.toFixed(2)+'%';
   document.getElementById('rmove').textContent=(moveP>=0?'+':'')+moveP.toFixed(2)+'%';
   document.getElementById('rliq').textContent='$'+fp(liqP);
   if(stop){
     var slD=dir==='long'?(stop-entry):(entry-stop);
+    var slFee=(size+stop*qty)*feeEach;
+    var slLoss=qty*slD-slFee;
     document.getElementById('rslrow').style.display='flex';
-    document.getElementById('rsl').textContent='$'+fmt(Math.abs(qty*slD));
+    document.getElementById('rsl').textContent=(slLoss>=0?'+':'-')+'$'+fmt(Math.abs(slLoss));
   } else {
     document.getElementById('rslrow').style.display='none';
   }
@@ -674,10 +380,9 @@ function calc(){
   if(lev>=10){
     var dist=dir==='long'?((entry-liqP)/entry*100):((liqP-entry)/entry*100);
     w.style.display='block';
-    w.textContent='⚠ 청산 경고: 진입가 대비 '+dist.toFixed(1)+'% 역방향 변동 시 청산됩니다. 레버리지 '+lev+'x는 고위험입니다.';
+    w.textContent='⚠ 청산 경고: 진입가 대비 '+dist.toFixed(2)+'% 역방향 변동 시 청산. 레버리지 '+lev+'x 고위험. MMR '+(mmr*100).toFixed(2)+'% 기준.';
   } else { w.style.display='none'; }
 }
-
 function calcComp(){
   var seed=parseFloat(document.getElementById('cseed').value)||1000;
   var rate=parseFloat(document.getElementById('crate').value)||5;
@@ -695,14 +400,9 @@ function calcComp(){
   var max=Math.max.apply(null,h), show=Math.min(h.length-1,20), step=Math.ceil((h.length-1)/show);
   for(var j=0;j<=show;j++){
     var idx=Math.min(j*step,h.length-1), v=h[idx], pct=(v/max*100).toFixed(1);
-    be.innerHTML+='<div class="bar-row">'+
-      '<span class="bar-label-l">'+idx+'회</span>'+
-      '<div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%"></div></div>'+
-      '<span class="bar-label-r">$'+Math.round(v).toLocaleString()+'</span>'+
-      '</div>';
+    be.innerHTML+='<div class="bar-row"><span class="bar-label-l">'+idx+'회</span><div class="bar-bg"><div class="bar-fill" style="width:'+pct+'%"></div></div><span class="bar-label-r">$'+Math.round(v).toLocaleString()+'</span></div>';
   }
 }
-
 load();
 </script>
 </body>
